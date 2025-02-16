@@ -11,7 +11,7 @@ public class MazeGenerator : MonoBehaviour
 
     private MazeCell[,] _mazeGrid;
 
-    IEnumerator Start()
+    void Start()
     {
         _mazeGrid = new MazeCell[_mazeWidth, _mazeDepth];
 
@@ -23,11 +23,11 @@ public class MazeGenerator : MonoBehaviour
             }
         }
 
-        yield return GenerateMainPath(_mazeGrid[0, 0], _mazeGrid[_mazeWidth - 1, _mazeDepth - 1]);
-        yield return GenerateSecondaryPaths();
+        GenerateMainPath(_mazeGrid[0, 0], _mazeGrid[_mazeWidth - 1, _mazeDepth - 1]);
+        GenerateSecondaryPaths();
     }
 
-    private IEnumerator GenerateMainPath(MazeCell startCell, MazeCell endCell)
+    private void GenerateMainPath(MazeCell startCell, MazeCell endCell)
     {
         MazeCell currentCell = startCell;
         MazeCell nextCell;
@@ -41,7 +41,6 @@ public class MazeGenerator : MonoBehaviour
             {
                 ClearWalls(currentCell, nextCell);
                 currentCell = nextCell;
-                yield return new WaitForSeconds(0.05f);
             }
             else
             {
@@ -89,7 +88,7 @@ public class MazeGenerator : MonoBehaviour
         return null; 
     }
 
-    private IEnumerator GenerateSecondaryPaths()
+    private void GenerateSecondaryPaths()
     {
         while (HasUnvisitedCells())
         {
@@ -97,11 +96,11 @@ public class MazeGenerator : MonoBehaviour
             if (startCell == null)
                 break;
 
-            yield return GenerateSecondaryPath(startCell);
+            GenerateSecondaryPath(startCell);
         }
     }
 
-    private IEnumerator GenerateSecondaryPath(MazeCell startCell)
+    private void GenerateSecondaryPath(MazeCell startCell)
     {
         MazeCell currentCell = startCell;
         int pathLength = Random.Range(5, 11); 
@@ -115,7 +114,6 @@ public class MazeGenerator : MonoBehaviour
                 ClearWalls(currentCell, nextCell);
                 nextCell.Visit();
                 currentCell = nextCell;
-                yield return new WaitForSeconds(0.05f);
             }
             else
             {
