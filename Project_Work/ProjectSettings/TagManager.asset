@@ -7,6 +7,7 @@ TagManager:
   - PlayerEyes
   - TeleportCube
   - DestinationCube
+  - TeleportExit
   layers:
   - Default
   - TransparentFX
