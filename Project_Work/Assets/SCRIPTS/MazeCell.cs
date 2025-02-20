@@ -12,7 +12,8 @@ public class MazeCell : MonoBehaviour
 
     [SerializeField] private GameObject _UnvisitedBlock;
 
-    [SerializeField] private GameObject _ground;
+    [SerializeField] public GameObject ground;
+
 
     public bool IsVisited { get; private set; }
 
@@ -21,7 +22,16 @@ public class MazeCell : MonoBehaviour
         IsVisited = true;
         _UnvisitedBlock.SetActive(false);
     }
-    
+
+    public void ColorMain()
+    {
+        Renderer renderer = ground.GetComponent<Renderer>();
+        Material nuovoMateriale = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        nuovoMateriale.color = Color.green;
+        renderer.material = nuovoMateriale;
+        
+    }
+
     public void ClearLeftWall()
     {
         _leftWall.SetActive(false);
