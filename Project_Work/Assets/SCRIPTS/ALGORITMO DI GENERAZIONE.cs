@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 
 public class MazeGeneratorAlgorithm : MonoBehaviour
 {
+    private bool isPaused = false;
+    private int c = 0;
+
     [SerializeField] private MazeCell _mazeCellPrefab;
     [SerializeField] private int _mazeWidth;
     [SerializeField] private int _mazeDepth;
@@ -42,20 +45,21 @@ public class MazeGeneratorAlgorithm : MonoBehaviour
 
         while (current != end)
         {
+            while (isPaused) yield return null;
+
             current.Visit();
-            current.ColorMain();
+            current.ColorPath(c);
 
             var NonVisitedAdiacentCells = GetNonVisitedCells(current).ToList();
             
             if (NonVisitedAdiacentCells.Count == 0)
             {
-                current = Backtrack(); // trova la cella del mainPath piu vicina alla fine
+                current = Backtrack();
                 path.Push(current);
             }
             else 
             {
-                // Aumenta la probabilità di scegliere destra e basso in modo da limitare i punti cechi
-                // e arrivare prima alla fine lasciando spazio ai percosi secondari
+                
                 List<MazeCell> weightedCells = new List<MazeCell>();
                 foreach (var cell in NonVisitedAdiacentCells)
                 {
@@ -69,11 +73,11 @@ public class MazeGeneratorAlgorithm : MonoBehaviour
                         weightedCells.Add(cell);
                         weightedCells.Add(cell);
                         weightedCells.Add(cell);
-                        weightedCells.Add(cell); // 4/5 80% di probabilità destra o basso
+                        weightedCells.Add(cell);
                     }
                     else
                     {
-                        weightedCells.Add(cell); // 1/5 20% di probabilità sinistra o alto
+                        weightedCells.Add(cell);
                     }
                 }
 
@@ -85,16 +89,11 @@ public class MazeGeneratorAlgorithm : MonoBehaviour
             }
         }
         end.Visit();
-        end.ColorMain();
+        end.ColorPath(c);
     }
 
     private IEnumerator GenerateSecondaryPaths()
-    /// <summary>
-    /// genera i percorsi secondari partendo dal primo nodo e si ferma quando il percorso si incastra
-    /// ritorna al percorso principale e trova il nodo successivo con delle celle adiacenti libere e fa partire un percorso nuovo
-    /// ripete fino alla fine del percorso principale
-    /// se restano celle libere ripete ripartendo dal primo nodo e crea i percorsi "terziari" e cosi via
-    /// </summary>
+    
     {
         bool hasUnvisitedCells;
 
@@ -103,6 +102,7 @@ public class MazeGeneratorAlgorithm : MonoBehaviour
             hasUnvisitedCells = false;
 
             var pathList = path.Reverse<MazeCell>().ToList();
+            c++;
 
             foreach (var cell in pathList)
             {
@@ -110,6 +110,8 @@ public class MazeGeneratorAlgorithm : MonoBehaviour
 
                 while (true)
                 {
+                    while (isPaused) yield return null;
+
                     var nonVisitedAdiacentCells = GetNonVisitedCells(current).ToList();
 
                     if (nonVisitedAdiacentCells.Count == 0) break;
@@ -117,6 +119,7 @@ public class MazeGeneratorAlgorithm : MonoBehaviour
                     MazeCell next = nonVisitedAdiacentCells[UnityEngine.Random.Range(0, nonVisitedAdiacentCells.Count)];
                     ClearWalls(current, next);
                     next.Visit();
+                    next.ColorPath(c);
                     path.Push(next);
                     current = next;
                     hasUnvisitedCells = true;
@@ -127,12 +130,7 @@ public class MazeGeneratorAlgorithm : MonoBehaviour
     }
 
     private MazeCell Backtrack()
-    /// <summary>
-    /// trova la cella più vicina alla fine dal percorso principale.
-    /// invece di trovare la prima cella con celle adiacenti non visitate del percorso principale
-    /// trova la più vicina alla fine. In questo modo il percorso principale ha una probabilità
-    /// minore di occupare quasi tutto il labirinto e maggiore di arrivare alla fine lascinado spazio ai percorsi secondari
-    /// </summary>
+
     {
         MazeCell closestCell = null;
         float minDistance = float.MaxValue;
@@ -198,5 +196,9 @@ public class MazeGeneratorAlgorithm : MonoBehaviour
     public void AlghorithmVieer()
     {
         SceneManager.LoadSceneAsync(2);
+    }
+    public void Pause()
+    {
+        isPaused = !isPaused;
     }
 }

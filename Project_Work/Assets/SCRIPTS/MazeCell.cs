@@ -23,15 +23,17 @@ public class MazeCell : MonoBehaviour
         _UnvisitedBlock.SetActive(false);
     }
 
-    public void ColorMain()
+    public void ColorPath(int i)
     {
         Renderer renderer = ground.GetComponent<Renderer>();
-        Material nuovoMateriale = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        nuovoMateriale.color = Color.green;
-        renderer.material = nuovoMateriale;
-        
-    }
 
+        if (i == 0) renderer.material.color = new Color32(28, 224, 13, 255);
+        if (i == 1) renderer.material.color = new Color32(255, 165, 0, 255);
+        if (i == 2) renderer.material.color = new Color32(242, 79, 15, 255);
+        if (i == 3) renderer.material.color= new Color32(242, 38, 15, 255);
+        if (i == 4) renderer.material.color = new Color32(209, 13, 13, 255);
+    }
+    
     public void ClearLeftWall()
     {
         _leftWall.SetActive(false);

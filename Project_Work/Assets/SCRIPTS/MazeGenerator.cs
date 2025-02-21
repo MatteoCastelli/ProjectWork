@@ -66,11 +66,13 @@ public class MazeGenerator : MonoBehaviour
 
             if (NonVisitedAdiacentCells.Count == 0)
             {
-                current = Backtrack();
+                current = Backtrack(); // trova la cella del mainPath piu vicina alla fine
                 path.Push(current);
             }
             else
             {
+                // Aumenta la probabilità di scegliere destra e basso in modo da limitare i punti cechi
+                // e arrivare prima alla fine lasciando spazio ai percosi secondari
                 List<MazeCell> weightedCells = new List<MazeCell>();
                 foreach (var cell in NonVisitedAdiacentCells)
                 {
@@ -84,11 +86,11 @@ public class MazeGenerator : MonoBehaviour
                         weightedCells.Add(cell);
                         weightedCells.Add(cell);
                         weightedCells.Add(cell);
-                        weightedCells.Add(cell);
+                        weightedCells.Add(cell); // 4/5 80% di probabilità destra o basso
                     }
                     else
                     {
-                        weightedCells.Add(cell);
+                        weightedCells.Add(cell); // 1/5 20% di probabilità sinistra o alto
                     }
                 }
 
@@ -102,6 +104,12 @@ public class MazeGenerator : MonoBehaviour
     }
 
     private void GenerateSecondaryPaths()
+    /// <summary>
+    /// genera i percorsi secondari partendo dal primo nodo e si ferma quando il percorso si incastra
+    /// ritorna al percorso principale e trova il nodo successivo con delle celle adiacenti libere e fa partire un percorso nuovo
+    /// ripete fino alla fine del percorso principale
+    /// se restano celle libere ripete ripartendo dal primo nodo e crea i percorsi "terziari" e cosi via
+    /// </summary>
     {
         bool hasUnvisitedCells;
 
@@ -134,6 +142,12 @@ public class MazeGenerator : MonoBehaviour
     }
 
     private MazeCell Backtrack()
+    /// <summary>
+    /// trova la cella più vicina alla fine dal percorso principale.
+    /// invece di trovare la prima cella con celle adiacenti non visitate del percorso principale
+    /// trova la più vicina alla fine. In questo modo il percorso principale ha una probabilità
+    /// minore di occupare quasi tutto il labirinto e maggiore di arrivare alla fine lascinado spazio ai percorsi secondari
+    /// </summary>
     {
         MazeCell closestCell = null;
         float minDistance = float.MaxValue;
