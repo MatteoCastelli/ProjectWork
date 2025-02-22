@@ -636,6 +636,7 @@ GameObject:
   - component: {fileID: 428419622}
   - component: {fileID: 428419621}
   - component: {fileID: 428419620}
+  - component: {fileID: 428419623}
   m_Layer: 5
   m_Name: AudioBtn
   m_TagString: Untagged
@@ -705,7 +706,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 428419621}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 428419623}
+        m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
+        m_MethodName: ToggleMute
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &428419621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -744,6 +757,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 428419618}
   m_CullTransparentMesh: 1
+--- !u!114 &428419623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 428419618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3265d6d7845e04bb7a593bf560556c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  normalSprite: {fileID: 21300000, guid: 607cd9e774a2a0040aad19b79edac9f3, type: 3}
+  pressedSprite: {fileID: 21300000, guid: a75a03d26f88a494eb6b6b1c8335b517, type: 3}
+  buttonImage: {fileID: 428419621}
 --- !u!1 &433833324
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI difficultyText;
 
-    private int difficultyLevel = 1; // 1 = Easy, 2 = Medium, 3 = Hard
+    private int difficultyLevel = 1;
 
     private void Start()
     {
@@ -28,7 +28,7 @@ public class MainMenu : MonoBehaviour
     private void UpdateDifficultyText()
     {
         string[] levels = { "EASY", "MEDIUM", "HARD" };
-        difficultyText.text = levels[difficultyLevel - 1]; // Aggiorna il testo UI
+        difficultyText.text = levels[difficultyLevel - 1];
     }
     public void PlayGame()
     {

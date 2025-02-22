@@ -14,7 +14,6 @@ public class MazeCell : MonoBehaviour
 
     [SerializeField] public GameObject ground;
 
-
     public bool IsVisited { get; private set; }
 
     public void Visit()
@@ -53,6 +52,4 @@ public class MazeCell : MonoBehaviour
     {
         _backWall.SetActive(false);
     }
-
-   
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class UncleAnimationAndMovementController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class UncleAnimationAndMovementController : MonoBehaviour
     CharacterController characterController;
     Animator animator;
     MazeGenerator _mazeGenerator;
+    [SerializeField] private GameObject victoryPanel;
 
     int isWalkingHash;
     int isRunningHash;
@@ -298,11 +300,7 @@ public class UncleAnimationAndMovementController : MonoBehaviour
     {
         if (hit.collider.CompareTag("TeleportExit"))
         {
-            Vector3 exitPosition = new Vector3(-2, 10, -2);
-
-            characterController.enabled = false;
-            transform.position = exitPosition;
-            characterController.enabled = true;
+            SceneManager.LoadSceneAsync(4);
         }
     }
 }
