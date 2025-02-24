@@ -9,8 +9,6 @@ public class MazeGenerator : MonoBehaviour
 {
     [SerializeField] private MazeCell _mazeCellPrefab;
     [SerializeField] private GameObject _teleportPrefab;
-    [SerializeField] private GameObject _characterPrefab;
-    [SerializeField] private CinemachineFreeLook _freeLookCamera;
     private int _mazeWidth;
     private int _mazeDepth;
     private MazeCell[,] _mazeGrid;
@@ -35,17 +33,7 @@ public class MazeGenerator : MonoBehaviour
         GenerateSecondaryPaths();
 
         PlaceTeleportPrefab(_mazeGrid[_mazeWidth - 1, _mazeDepth - 1]);
-        PlaceCharacterPrefab(_mazeGrid[0, 0]);
     }
-
-    private void PlaceCharacterPrefab(MazeCell cell)
-    {
-        Vector3 position = cell.transform.position;
-        GameObject _characterInstance = Instantiate(_characterPrefab, position, Quaternion.identity);
-        _freeLookCamera.Follow = _characterInstance.transform;
-        _freeLookCamera.LookAt = _characterInstance.transform;
-    }
-
 
     private void PlaceTeleportPrefab(MazeCell cell)
     {

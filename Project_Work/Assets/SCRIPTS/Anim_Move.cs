@@ -1,15 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Anim_Move : MonoBehaviour
 {
     public static PlayerInput playerInput;
     CharacterController characterController;
     Animator animator;
-    [SerializeField] private GameObject victoryPanel;
 
     int isWalkingHash;
     int isRunningHash;
@@ -37,10 +35,16 @@ public class Anim_Move : MonoBehaviour
     int isJumpingHash;
     bool isJumpAnimating = false;
 
-
     public string[] animationTriggers = { "Anim1", "Anim2", "Anim3", "Anim4", "Anim5" };
     private bool isAnimating = false;
     private int currentAnimationIndex = 0;
+
+    public float maxStamina = 5.0f;
+    private float currentStamina;
+    private bool isStaminaDepleted = false;
+    private float staminaRechargeDelay = 3.0f;
+    private float staminaRechargeTimer = 0.0f;
+    public Slider staminaSlider;
 
 
     void Awake()
@@ -65,10 +69,16 @@ public class Anim_Move : MonoBehaviour
 
         playerInput.CharacterControls.Emote.performed += OnEmotePressed;
 
-        setuupJumpVariables();
+        setupJumpVariables();
+
+        currentStamina = maxStamina;
+
+        staminaSlider.maxValue = maxStamina;
+        staminaSlider.value = currentStamina;
+        
     }
 
-    void setuupJumpVariables()
+    void setupJumpVariables()
     {
         float timeToApex = maxJumpTime / 2;
         gravity = (-2 * maxJumpHeight) / Mathf.Pow(timeToApex, 2);
@@ -82,7 +92,44 @@ public class Anim_Move : MonoBehaviour
             handleRotation();
             handleAnimation();
 
-            if (isRunPressed)
+            if (isRunPressed && isMovementPressed && currentStamina > 0)
+            {
+                currentStamina -= Time.deltaTime;
+                if (currentStamina <= 0)
+                {
+                    currentStamina = 0;
+                    isStaminaDepleted = true;
+                    isRunPressed = false;
+                    animator.SetBool(isRunningHash, false);
+                }
+            }
+            else if (!isRunPressed || !isMovementPressed)
+            {
+                if (isStaminaDepleted)
+                {
+                    staminaRechargeTimer += Time.deltaTime;
+                    if (staminaRechargeTimer >= staminaRechargeDelay)
+                    {
+                        isStaminaDepleted = false;
+                        staminaRechargeTimer = 0.0f;
+                    }
+                }
+                else
+                {
+                    currentStamina += (Time.deltaTime * 2);
+                    if (currentStamina > maxStamina)
+                    {
+                        currentStamina = maxStamina;
+                    }
+                }
+            }
+
+            if (staminaSlider != null)
+            {
+                staminaSlider.value = currentStamina;
+            }
+
+            if (isRunPressed && !isStaminaDepleted)
             {
                 appliedMovement.x = currentRunMovement.x;
                 appliedMovement.z = currentRunMovement.z;
@@ -186,6 +233,7 @@ public class Anim_Move : MonoBehaviour
 
         isMovementPressed = currentMovementInput.x != 0 || currentMovementInput.y != 0;
     }
+
     void handleAnimation()
     {
         if (isAnimating) return;
@@ -202,11 +250,11 @@ public class Anim_Move : MonoBehaviour
             animator.SetBool(isWalkingHash, false);
         }
 
-        if ((isMovementPressed && isRunPressed) && !isRunning)
+        if (isMovementPressed && isRunPressed && !isStaminaDepleted && !isRunning)
         {
             animator.SetBool(isRunningHash, true);
         }
-        else if ((!isMovementPressed || !isRunPressed) && isRunning)
+        else if ((!isMovementPressed || !isRunPressed || isStaminaDepleted) && isRunning)
         {
             animator.SetBool(isRunningHash, false);
         }
