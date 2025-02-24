@@ -8,16 +8,18 @@ using UnityEngine;
 public class MazeGenerator : MonoBehaviour
 {
     [SerializeField] private MazeCell _mazeCellPrefab;
-    [SerializeField] private int _mazeWidth;
-    [SerializeField] private int _mazeDepth;
     [SerializeField] private GameObject _teleportPrefab;
     [SerializeField] private GameObject _characterPrefab;
     [SerializeField] private CinemachineFreeLook _freeLookCamera;
+    private int _mazeWidth;
+    private int _mazeDepth;
     private MazeCell[,] _mazeGrid;
     private Stack<MazeCell> path;
 
     void Start()
     {
+        _mazeDepth = MainMenu.SelectedMazeSize;
+        _mazeWidth = MainMenu.SelectedMazeSize;
         _mazeGrid = new MazeCell[_mazeWidth, _mazeDepth];
         path = new Stack<MazeCell>();
 

@@ -4,12 +4,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class UncleAnimationAndMovementController : MonoBehaviour
+public class Anim_Move : MonoBehaviour
 {
-    PlayerInput playerInput;
+    public static PlayerInput playerInput;
     CharacterController characterController;
     Animator animator;
-    MazeGenerator _mazeGenerator;
     [SerializeField] private GameObject victoryPanel;
 
     int isWalkingHash;
@@ -46,8 +45,6 @@ public class UncleAnimationAndMovementController : MonoBehaviour
 
     void Awake()
     {
-        _mazeGenerator = FindFirstObjectByType<MazeGenerator>();
-
         playerInput = new PlayerInput();
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();

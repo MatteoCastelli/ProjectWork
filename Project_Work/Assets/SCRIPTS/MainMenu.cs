@@ -6,7 +6,8 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI difficultyText;
 
-    private int difficultyLevel = 1;
+    public static int SelectedDifficultyLevel { get; private set; } = 1;
+    public static int SelectedMazeSize { get; private set; } = 10;
 
     private void Start()
     {
@@ -15,21 +16,35 @@ public class MainMenu : MonoBehaviour
 
     public void IncreaseDifficulty()
     {
-        difficultyLevel = (difficultyLevel % 3) + 1;
+        SelectedDifficultyLevel = (SelectedDifficultyLevel % 3) + 1;
         UpdateDifficultyText();
     }
 
     public void DecreaseDifficulty()
     {
-        difficultyLevel = (difficultyLevel - 1 <= 0) ? 3 : difficultyLevel - 1;
+        SelectedDifficultyLevel = (SelectedDifficultyLevel - 1 <= 0) ? 3 : SelectedDifficultyLevel - 1;
         UpdateDifficultyText();
     }
 
     private void UpdateDifficultyText()
     {
         string[] levels = { "EASY", "MEDIUM", "HARD" };
-        difficultyText.text = levels[difficultyLevel - 1];
+        difficultyText.text = levels[SelectedDifficultyLevel - 1];
+
+        switch (SelectedDifficultyLevel)
+        {
+            case 1:
+                SelectedMazeSize = 10;
+                break;
+            case 2:
+                SelectedMazeSize = 15;
+                break;
+            case 3:
+                SelectedMazeSize = 20;
+                break;
+        }
     }
+
     public void PlayGame()
     {
         SceneManager.LoadSceneAsync(1);
