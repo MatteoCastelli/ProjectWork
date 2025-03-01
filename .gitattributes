@@ -1,0 +1,7 @@
+*.unity filter=lfs diff=lfs merge=lfs -text
+*.Forst filter=lfs diff=lfs merge=lfs -text
+*.terreno2 filter=lfs diff=lfs merge=lfs -text
+*.ADG_Textures filter=lfs diff=lfs merge=lfs -text
+*.Adventure_Character filter=lfs diff=lfs merge=lfs -text
+Project_Work/terreno2/Realistic[[:space:]]Terrain[[:space:]]Textures[[:space:]]Lite/Scenes/TerrainDATA/Terrain.asset filter=lfs diff=lfs merge=lfs -text
+Project_Work/terreno2/Realistic[[:space:]]Terrain[[:space:]]Textures[[:space:]]Lite/Textures/* filter=lfs diff=lfs merge=lfs -text
