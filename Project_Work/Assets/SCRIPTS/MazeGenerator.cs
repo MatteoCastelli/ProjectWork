@@ -1,7 +1,6 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -9,6 +8,7 @@ public class MazeGenerator : MonoBehaviour
 {
     [SerializeField] private MazeCell _mazeCellPrefab;
     [SerializeField] private GameObject _teleportPrefab;
+    [SerializeField] private GameObject[] enemyPrefabs; // Array di prefab nemici
     private int _mazeWidth;
     private int _mazeDepth;
     private MazeCell[,] _mazeGrid;
@@ -21,6 +21,9 @@ public class MazeGenerator : MonoBehaviour
         _mazeGrid = new MazeCell[_mazeWidth, _mazeDepth];
         path = new Stack<MazeCell>();
 
+        Debug.Log("Maze generation started.");
+
+        // Creazione delle celle del labirinto
         for (int x = 0; x < _mazeWidth; x++)
         {
             for (int z = 0; z < _mazeDepth; z++)
@@ -29,10 +32,15 @@ public class MazeGenerator : MonoBehaviour
             }
         }
 
+        // Genera il percorso principale e secondario
         GenerateMainPath(_mazeGrid[0, 0], _mazeGrid[_mazeWidth - 1, _mazeDepth - 1]);
         GenerateSecondaryPaths();
 
+        // Posiziona il teleport
         PlaceTeleportPrefab(_mazeGrid[_mazeWidth - 1, _mazeDepth - 1]);
+
+        // Spawna i nemici nel labirinto
+        SpawnEnemies();
     }
 
     private void PlaceTeleportPrefab(MazeCell cell)
@@ -48,6 +56,8 @@ public class MazeGenerator : MonoBehaviour
 
         MazeCell next = null;
 
+        Debug.Log("Generating main path...");
+
         while (current != end)
         {
             current.Visit();
@@ -61,8 +71,6 @@ public class MazeGenerator : MonoBehaviour
             }
             else
             {
-                // Aumenta la probabilità di scegliere destra e basso in modo da limitare i punti cechi
-                // e arrivare prima alla fine lasciando spazio ai percosi secondari
                 List<MazeCell> weightedCells = new List<MazeCell>();
                 foreach (var cell in NonVisitedAdiacentCells)
                 {
@@ -90,18 +98,16 @@ public class MazeGenerator : MonoBehaviour
                 path.Push(current);
             }
         }
+
         end.Visit();
+        Debug.Log("Main path generated.");
     }
 
     private void GenerateSecondaryPaths()
-    /// <summary>
-    /// genera i percorsi secondari partendo dal primo nodo e si ferma quando il percorso si incastra
-    /// ritorna al percorso principale e trova il nodo successivo con delle celle adiacenti libere e fa partire un percorso nuovo
-    /// ripete fino alla fine del percorso principale
-    /// se restano celle libere ripete ripartendo dal primo nodo e crea i percorsi "terziari" e cosi via
-    /// </summary>
     {
         bool hasUnvisitedCells;
+
+        Debug.Log("Generating secondary paths...");
 
         do
         {
@@ -125,19 +131,14 @@ public class MazeGenerator : MonoBehaviour
                     path.Push(next);
                     current = next;
                     hasUnvisitedCells = true;
-                    
                 }
             }
         } while (hasUnvisitedCells);
+
+        Debug.Log("Secondary paths generated.");
     }
 
     private MazeCell Backtrack()
-    /// <summary>
-    /// trova la cella più vicina alla fine dal percorso principale.
-    /// invece di trovare la prima cella con celle adiacenti non visitate del percorso principale
-    /// trova la più vicina alla fine. In questo modo il percorso principale ha una probabilità
-    /// minore di occupare quasi tutto il labirinto e maggiore di arrivare alla fine lascinado spazio ai percorsi secondari
-    /// </summary>
     {
         MazeCell closestCell = null;
         float minDistance = float.MaxValue;
@@ -195,4 +196,55 @@ public class MazeGenerator : MonoBehaviour
             currentCell.ClearFrontWall();
         }
     }
+
+    // Funzione per spawnare i nemici nel labirinto
+    private void SpawnEnemies()
+    {
+        List<Vector3> spawnPositions = new List<Vector3>();
+
+        Debug.Log("Checking valid spawn positions...");
+
+        // Aggiungi alcune celle casuali per lo spawn
+        foreach (var cell in _mazeGrid)
+        {
+            // Modifica qui per scegliere celle casualmente
+            if (Random.value > 0.5f) // 50% di probabilità per ogni cella
+            {
+                // Posiziona il nemico esattamente sulla Y della cella
+                Vector3 spawnPosition = new Vector3(cell.transform.position.x, cell.transform.position.y, cell.transform.position.z);
+                spawnPositions.Add(spawnPosition);
+            }
+        }
+
+        Debug.Log($"Found {spawnPositions.Count} valid spawn positions.");
+
+        // Mescola le posizioni per una distribuzione casuale
+        spawnPositions = spawnPositions.OrderBy(x => Random.value).ToList();
+
+        // Istanzia i nemici nelle posizioni selezionate
+        foreach (var position in spawnPositions)
+        {
+            GameObject enemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
+            Debug.Log($"Enemy spawned at {position}");
+
+            // Verifica che il nemico sia effettivamente posizionato correttamente
+            if (enemy != null)
+            {
+                Collider enemyCollider = enemy.GetComponent<Collider>();
+                if (enemyCollider != null)
+                {
+                    Debug.Log($"Enemy collider at {enemyCollider.transform.position}");
+                }
+            }
+        }
+
+        if (spawnPositions.Count == 0)
+        {
+            Debug.LogWarning("No valid spawn positions found.");
+        }
+    }
+
+
+
 }
